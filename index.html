@@ -72,29 +72,38 @@
     }
 
     #calcWidget .buttons {
-      flex: 1 1 auto;
+      flex: 1 1 0;
       min-height: 0;
       width: 100%;
       margin: 0;
       padding: 0;
-      display: grid;
-      grid-template-columns: repeat(9, minmax(0, 1fr));
-      grid-template-rows: repeat(4, minmax(0, 1fr));
+      display: flex;
+      flex-direction: column;
       gap: 4px;
       overflow: hidden;
+    }
+
+    #calcWidget .row {
+      flex: 1 1 0;
+      min-height: 0;
+      min-width: 0;
+      display: flex;
+      gap: 4px;
     }
 
     #calcWidget .buttons input[type="button"] {
       -webkit-appearance: none;
       appearance: none;
-      width: auto;
+      flex: 1 1 0;
+      width: 0;
       height: auto;
       min-width: 0;
       min-height: 0;
+      overflow: hidden;
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      font-size: clamp(10px, 2.5vw, 20px);
+      font-size: clamp(7px, 2.5vw, 20px);
       font-weight: bold;
       line-height: 1;
       border: 1px solid #fff !important;
@@ -120,47 +129,50 @@
   <div id="calcWidget" class="calculator">
     <input type="text" id="calc-display" class="display" readonly />
     <div class="buttons">
-      <input type="button" value="1">
-      <input type="button" value="2">
-      <input type="button" value="3">
-      <input type="button" value="4">
-      <input type="button" value="5">
-      <input type="button" value="6">
-      <input type="button" value="7">
-      <input type="button" value="8">
-      <input type="button" value="9">
-      <input type="button" value="0">
-
-      <input type="button" value="C">
-      <input type="button" value="⌫">
-      <input type="button" value="*">
-      <input type="button" value="+">
-      <input type="button" value="-">
-      <input type="button" value="/">
-      <input type="button" value="!">
-      <input type="button" value=".">
-      <input type="button" value=",">
-
-      <input type="button" value="%">
-      <input type="button" value="cos(">
-      <input type="button" value="sin(">
-      <input type="button" value="tan(">
-
-      <input type="button" value="e">
-      <input type="button" value="pi">
-      <input type="button" value="^">
-      <input type="button" value="(">
-      <input type="button" value=")">
-      <input type="button" value="log(">
-
-      <input type="button" value="sqrt(">
-      <input type="button" value="log2(">
-      <input type="button" value="log10(">
-      <input type="button" value="l2e">
-      <input type="button" value="l10e">
-      <input type="button" value="exp(">
-
-      <input type="button" value="=">
+      <div class="row">
+        <input type="button" value="1">
+        <input type="button" value="2">
+        <input type="button" value="3">
+        <input type="button" value="4">
+        <input type="button" value="5">
+        <input type="button" value="6">
+        <input type="button" value="7">
+        <input type="button" value="8">
+        <input type="button" value="9">
+      </div>
+      <div class="row">
+        <input type="button" value="0">
+        <input type="button" value="C">
+        <input type="button" value="⌫">
+        <input type="button" value="*">
+        <input type="button" value="+">
+        <input type="button" value="-">
+        <input type="button" value="/">
+        <input type="button" value="!">
+        <input type="button" value=".">
+      </div>
+      <div class="row">
+        <input type="button" value=",">
+        <input type="button" value="%">
+        <input type="button" value="cos(">
+        <input type="button" value="sin(">
+        <input type="button" value="tan(">
+        <input type="button" value="e">
+        <input type="button" value="pi">
+        <input type="button" value="^">
+        <input type="button" value="(">
+      </div>
+      <div class="row">
+        <input type="button" value=")">
+        <input type="button" value="log(">
+        <input type="button" value="sqrt(">
+        <input type="button" value="log2(">
+        <input type="button" value="log10(">
+        <input type="button" value="l2e">
+        <input type="button" value="l10e">
+        <input type="button" value="exp(">
+        <input type="button" value="=">
+      </div>
     </div>
   </div>
 
