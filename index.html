@@ -7,9 +7,9 @@
   <title>Responsive Scientific Calculator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.js"></script>
   <style>
-    /* Made to be hosted at a URL and shown in Renewed Tab's IFrame widget.
-       The iframe isolates this page, so these page-level rules cannot shift
-       anything else on the new tab page. */
+    /* Made to be hosted at a URL and shown in an iframe about 160px wide x 350px tall.
+       It fills whatever frame it is given, so page-level rules cannot shift
+       anything else on the page. Add ?preview to the URL for a dark backdrop. */
     html, body {
       margin: 0;
       padding: 0;
@@ -31,10 +31,8 @@
 
     #calcWidget {
       position: relative;
-      width: 100%;   /* fills whatever frame the widget gives it */
+      width: 100%;
       height: 100%;
-      max-width: none;
-      max-height: none;
       margin: 0;
       padding: 3px;
       background: transparent !important;
@@ -48,19 +46,69 @@
       overflow: hidden;
     }
 
+    /* ---- Output area: scrolling history on top, current line at the bottom ---- */
+    #calcWidget .output {
+      flex: 0 0 112px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #fff !important;
+      border-radius: 5px;
+      background: transparent !important;
+      overflow: hidden;
+    }
+
+    #calcWidget .history {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 3px 6px;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: normal;
+      text-align: left;
+      color: rgba(255, 255, 255, 0.75);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+    }
+
+    #calcWidget .history::-webkit-scrollbar { width: 4px; }
+    #calcWidget .history::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 2px; }
+
+    #calcWidget .history:empty::before {
+      content: "history";
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    #calcWidget .history .entry {
+      padding: 1px 0;
+      word-break: break-all;
+    }
+
+    #calcWidget .history .res {
+      color: #fff;
+      font-weight: bold;
+    }
+
     #calcWidget .display {
       display: block;
+      flex: 0 0 44px;
       width: 100%;
-      height: 38px;
-      flex: none;
+      height: 44px;
       margin: 0;
-      padding: 0 10px;
+      padding: 3px 6px;
+      resize: none;
+      overflow-y: auto;
       font-family: Arial, sans-serif;
-      font-size: 20px;
+      font-size: 15px;
+      line-height: 1.2;
       font-weight: bold;
       text-align: left;
-      border: 2px solid #fff !important;
-      border-radius: 5px;
+      word-break: break-all;
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.6) !important;
+      border-radius: 0;
       background: transparent !important;
       color: #fff !important;
       -webkit-text-fill-color: #fff !important;
@@ -69,8 +117,11 @@
       outline: none;
       -webkit-appearance: none;
       appearance: none;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
     }
 
+    /* ---- Buttons: 9 rows x 4 columns ---- */
     #calcWidget .buttons {
       flex: 1 1 0;
       min-height: 0;
@@ -79,7 +130,7 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       overflow: hidden;
     }
 
@@ -103,7 +154,7 @@
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      font-size: clamp(7px, 2.5vw, 20px);
+      font-size: clamp(8px, 6.2vw, 14px);
       font-weight: bold;
       line-height: 1;
       border: 1px solid #fff !important;
@@ -127,47 +178,60 @@
 </head>
 <body>
   <div id="calcWidget" class="calculator">
-    <input type="text" id="calc-display" class="display" readonly />
+    <div class="output">
+      <div class="history" id="calc-history"></div>
+      <textarea id="calc-display" class="display" readonly></textarea>
+    </div>
     <div class="buttons">
+      <div class="row">
+        <input type="button" value="C">
+        <input type="button" value="⌫">
+        <input type="button" value="(">
+        <input type="button" value=")">
+      </div>
+      <div class="row">
+        <input type="button" value="7">
+        <input type="button" value="8">
+        <input type="button" value="9">
+        <input type="button" value="/">
+      </div>
+      <div class="row">
+        <input type="button" value="4">
+        <input type="button" value="5">
+        <input type="button" value="6">
+        <input type="button" value="*">
+      </div>
       <div class="row">
         <input type="button" value="1">
         <input type="button" value="2">
         <input type="button" value="3">
-        <input type="button" value="4">
-        <input type="button" value="5">
-        <input type="button" value="6">
-        <input type="button" value="7">
-        <input type="button" value="8">
-        <input type="button" value="9">
+        <input type="button" value="-">
       </div>
       <div class="row">
         <input type="button" value="0">
-        <input type="button" value="C">
-        <input type="button" value="⌫">
-        <input type="button" value="*">
-        <input type="button" value="+">
-        <input type="button" value="-">
-        <input type="button" value="/">
-        <input type="button" value="!">
         <input type="button" value=".">
-      </div>
-      <div class="row">
         <input type="button" value=",">
-        <input type="button" value="%">
-        <input type="button" value="cos(">
-        <input type="button" value="sin(">
-        <input type="button" value="tan(">
-        <input type="button" value="e">
-        <input type="button" value="pi">
-        <input type="button" value="^">
-        <input type="button" value="(">
+        <input type="button" value="+">
       </div>
       <div class="row">
-        <input type="button" value=")">
+        <input type="button" value="sin(">
+        <input type="button" value="cos(">
+        <input type="button" value="tan(">
+        <input type="button" value="^">
+      </div>
+      <div class="row">
         <input type="button" value="log(">
-        <input type="button" value="sqrt(">
         <input type="button" value="log2(">
         <input type="button" value="log10(">
+        <input type="button" value="sqrt(">
+      </div>
+      <div class="row">
+        <input type="button" value="e">
+        <input type="button" value="pi">
+        <input type="button" value="!">
+        <input type="button" value="%">
+      </div>
+      <div class="row">
         <input type="button" value="l2e">
         <input type="button" value="l10e">
         <input type="button" value="exp(">
@@ -179,14 +243,15 @@
   <script>
     (function () {
       // Open the page with ?preview on the end of the URL to see it on a dark
-      // background. Without it the page stays fully transparent (for the widget).
+      // background. Without it the page stays fully transparent.
       if (/[?&]preview(=|&|$)/.test(location.search)) {
         document.documentElement.style.background = "#1e1e1e";
       }
 
-      var root = document.getElementById("calcWidget");
-      var screen = root.querySelector(".display");
+      var screen = document.getElementById("calc-display");
+      var historyBox = document.getElementById("calc-history");
       var isDegrees = true;
+      var MAX_HISTORY = 100;
 
       // Buttons that insert something other than their own label
       var insertText = {
@@ -195,42 +260,72 @@
         "l10e": String(Math.LOG10E)
       };
 
+      function show(text) {
+        screen.value = text;
+        screen.scrollTop = screen.scrollHeight; // keep the newest characters in view
+      }
+
+      function addHistory(expr, result) {
+        var row = document.createElement("div");
+        row.className = "entry";
+        row.appendChild(document.createTextNode(expr + " "));
+        var res = document.createElement("span");
+        res.className = "res";
+        res.textContent = "= " + result;
+        row.appendChild(res);
+        historyBox.appendChild(row);
+        while (historyBox.children.length > MAX_HISTORY) {
+          historyBox.removeChild(historyBox.firstChild);
+        }
+        historyBox.scrollTop = historyBox.scrollHeight;
+      }
+
       function backspace() {
-        screen.value = screen.value.slice(0, -1);
+        show(screen.value.slice(0, -1));
       }
 
       function addDecimal() {
-        if (!screen.value.includes(".")) {
-          screen.value += ".";
+        // allow one decimal point per number (not one per whole expression)
+        var lastNumber = screen.value.match(/[0-9.]*$/)[0];
+        if (lastNumber.indexOf(".") === -1) {
+          show(screen.value + ".");
         }
       }
 
       function calculate() {
-        var expression = screen.value;
+        var original = screen.value;
+        if (!original.trim()) return;
+        var expression = original;
         try {
           if (isDegrees) {
             expression = expression.replace(/sin\(/g, "sin(" + Math.PI / 180 + "*");
             expression = expression.replace(/cos\(/g, "cos(" + Math.PI / 180 + "*");
             expression = expression.replace(/tan\(/g, "tan(" + Math.PI / 180 + "*");
           }
-          screen.value = math.evaluate(expression);
+          var result = math.evaluate(expression);
+          if (result === undefined) throw new Error("no result");
+          var text = math.format(result, 14);
+          addHistory(original, text);
+          show(text);
         } catch (err) {
-          screen.value = "Error";
-          setTimeout(function () { screen.value = ""; }, 2000);
+          show("Error");
+          setTimeout(function () {
+            if (screen.value === "Error") show("");
+          }, 2000);
         }
       }
 
-      root.querySelector(".buttons").addEventListener("click", function (e) {
+      document.querySelector(".buttons").addEventListener("click", function (e) {
         var btn = e.target;
         if (!btn || btn.type !== "button") return;
         var v = btn.value;
 
-        if (v === "C") screen.value = "";
+        if (v === "C") show("");
         else if (v === "\u232B") backspace();
         else if (v === ".") addDecimal();
         else if (v === "=") calculate();
-        else if (Object.prototype.hasOwnProperty.call(insertText, v)) screen.value += insertText[v];
-        else screen.value += v;
+        else if (Object.prototype.hasOwnProperty.call(insertText, v)) show(screen.value + insertText[v]);
+        else show(screen.value + v);
       });
     })();
   </script>
